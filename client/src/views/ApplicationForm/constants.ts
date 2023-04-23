@@ -56,17 +56,17 @@ export type StateKey = keyof typeof STATES;
 export const INITIAL_VALUES = {
   firstName: "",
   lastName: "",
-  dateOfBirth: "",
+  dateOfBirth: new Date(),
   street: "",
   city: "",
   state: "",
-  zipCode: "",
-  vehicles: [{ vin: "", year: "", make: "", model: "" }],
+  zipCode: 0,
+  vehicles: [{ vin: "", year: 1985, make: "", model: "" }],
 };
 
 export type Vehicle = {
   vin: string;
-  year: string;
+  year: number;
   make: string;
   model: string;
 };
@@ -74,10 +74,10 @@ export type Vehicle = {
 export type FORM_DATA = {
   firstName: string;
   lastName: string;
-  dateOfBirth: string;
+  dateOfBirth: Date;
   street: string;
   city: string;
   state: string;
-  zipCode: string;
+  zipCode: number;
   vehicles: Vehicle[];
 };

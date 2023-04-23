@@ -44,6 +44,7 @@ const VehicleInfo = ({
                 <InputField
                   name={`vehicles.${idx}.year`}
                   label="Year"
+                  type="number"
                   value={year}
                   onBlur={handleBlur}
                   onChange={handleChange}

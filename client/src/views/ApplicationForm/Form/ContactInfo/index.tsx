@@ -1,14 +1,17 @@
 import { MenuItem } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
 import FlexBox from "components/atoms/FlexBox";
 import InputField from "components/molecules/InputField";
 import SectionHeader from "components/molecules/SectionHeader";
-import { FormikHandlers } from "formik";
+import { ErrorMessage, Field, FieldProps, FormikHandlers } from "formik";
 import { FORM_DATA, STATES, StateKey } from "views/ApplicationForm/constants";
 
 interface ContactInfoProps {
   values: {
     firstName: FORM_DATA["firstName"];
     lastName: FORM_DATA["lastName"];
+    dateOfBirth: FORM_DATA["dateOfBirth"];
     street: FORM_DATA["street"];
     city: FORM_DATA["city"];
     state: FORM_DATA["state"];
@@ -19,7 +22,7 @@ interface ContactInfoProps {
 }
 
 const ContactInfo = ({
-  values: { firstName, lastName, street, city, state, zipCode },
+  values: { firstName, lastName, dateOfBirth, street, city, state, zipCode },
   handleBlur,
   handleChange,
 }: ContactInfoProps) => (
@@ -43,6 +46,26 @@ const ContactInfo = ({
     </FlexBox>
 
     <FlexBox columnGap={1}>
+      <FlexBox flexDirection="column">
+        <Field name="dateOfBirth">
+          {({ field, form }: FieldProps) => (
+            <DatePicker
+              label="Date of Birth"
+              value={dateOfBirth}
+              onChange={(date) => form.setFieldValue(field.name, date)}
+              closeOnSelect
+              disableFuture
+            />
+          )}
+        </Field>
+
+        <ErrorMessage
+          name="dateOfBirth"
+          component="div"
+          className="field-error"
+        />
+      </FlexBox>
+
       <InputField
         label="Street Address"
         name="street"

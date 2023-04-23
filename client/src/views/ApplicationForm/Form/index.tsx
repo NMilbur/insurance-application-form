@@ -35,7 +35,7 @@ const validationSchema = Yup.object().shape({
     .of(
       Yup.object().shape({
         vin: Yup.string().required("VIN is required"),
-        year: Yup.string()
+        year: Yup.number()
           .min(1985, "Year must be greater than or equal to 1985")
           .max(
             currentYear + 1,

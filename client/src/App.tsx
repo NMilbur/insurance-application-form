@@ -1,12 +1,17 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+
 import { THEME } from "constants/theme";
 import ApplicationForm from "views/ApplicationForm";
 
 function App() {
   return (
     <ThemeProvider theme={THEME}>
-      <CssBaseline />
-      <ApplicationForm />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <CssBaseline />
+        <ApplicationForm />
+      </LocalizationProvider>
     </ThemeProvider>
   );
 }
