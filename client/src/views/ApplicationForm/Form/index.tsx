@@ -1,3 +1,4 @@
+import { isBefore, sub } from "date-fns";
 import { Form as FormikForm, Formik } from "formik";
 import * as Yup from "yup";
 import FlexBox from "components/atoms/FlexBox";
@@ -7,17 +8,22 @@ import ContactInfo from "./ContactInfo";
 import VehicleInfo from "./VehicleInfo";
 import { Button } from "@mui/material";
 
-const currentYear = new Date().getFullYear();
+const currentDate = new Date();
+const currentYear = currentDate.getFullYear();
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
   dateOfBirth: Yup.date()
-    .max(
-      new Date(currentYear - 16, 12, 31),
-      "You must be at least 16 years old"
-    )
-    .required("Date of birth is required"),
+    .required("Date of birth is required")
+    .test(
+      "is-at-least-sixteen",
+      "You must be at least 16 years old",
+      (value) => {
+        const minimumDate = sub(currentDate, { years: 16 });
+        return isBefore(value, minimumDate);
+      }
+    ),
   street: Yup.string().required("Street is required"),
   city: Yup.string().required("City is required"),
   state: Yup.string().required("State is required"),
@@ -35,12 +41,12 @@ const validationSchema = Yup.object().shape({
             currentYear + 1,
             `Year must be less than or equal to ${currentYear + 1}`
           )
+          .required("Year is required")
           .test(
             "is-four-digits",
             "Year must be in YYYY format",
-            (value) => value?.toString().length === 4
+            (value) => value.toString().length === 4
           )
-          .required("Year is required")
           .typeError("Year must be a number"),
         make: Yup.string().required("Make is required"),
         model: Yup.string().required("Model is required"),
