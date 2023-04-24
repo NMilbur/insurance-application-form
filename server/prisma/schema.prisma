@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Application {
+  id                    Int @id @default(autoincrement())
+  applicationReference  String
+  firstName             String
+  lastName              String
+  dateOfBirth           DateTime?
+  street                String?
+  city                  String?
+  state                 String?
+  zipCode               Int?
+  vehicles              Vehicle[]
+}
+
+model Vehicle {
+  id             Int @id @default(autoincrement())
+  vin            String
+  year           Int
+  make           String
+  model          String
+
+  Application    Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId  Int
+}
