@@ -1,3 +1,6 @@
+export const API_URL = import.meta.env.VITE_API_URL;
+export const CURRENT_API_VERSION_URL = `${API_URL}/api/v1`;
+
 export const STATES = Object.freeze({
   AL: "Alabama",
   AK: "Alaska",
@@ -62,22 +65,4 @@ export const INITIAL_VALUES = {
   state: "",
   zipCode: 0,
   vehicles: [{ vin: "", year: 1985, make: "", model: "" }],
-};
-
-export type Vehicle = {
-  vin: string;
-  year: number;
-  make: string;
-  model: string;
-};
-
-export type FORM_DATA = {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: Date;
-  street: string;
-  city: string;
-  state: string;
-  zipCode: number;
-  vehicles: Vehicle[];
 };

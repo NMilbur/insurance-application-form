@@ -3,10 +3,12 @@ import { Form as FormikForm, Formik } from "formik";
 import * as Yup from "yup";
 import FlexBox from "components/atoms/FlexBox";
 
-import { INITIAL_VALUES } from "../constants";
+import { INITIAL_VALUES } from "constants";
 import ContactInfo from "./ContactInfo";
 import VehicleInfo from "./VehicleInfo";
 import { Button } from "@mui/material";
+import { useGetApplication } from "services/application";
+import { useSearchParams } from "react-router-dom";
 
 const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
@@ -55,9 +57,15 @@ const validationSchema = Yup.object().shape({
 });
 
 const Form = () => {
+  const [searchParams] = useSearchParams();
+  const { data } = useGetApplication(searchParams.get("ref") ?? "");
+
+  console.log(data);
+
   return (
     <Formik
-      initialValues={INITIAL_VALUES}
+      enableReinitialize
+      initialValues={data ?? INITIAL_VALUES}
       validationSchema={validationSchema}
       onSubmit={(values) => console.log(values)}
     >

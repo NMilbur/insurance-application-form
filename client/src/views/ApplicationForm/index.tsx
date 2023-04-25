@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@mui/material";
 import Page from "components/molecules/Page";
 import FlexBox from "components/atoms/FlexBox";
-import Form from "./Form";
+import Form from "views/ApplicationForm/Form";
 import SectionHeader from "components/molecules/SectionHeader";
 
 const ApplicationForm = () => {

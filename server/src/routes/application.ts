@@ -1,13 +1,13 @@
 import express from "express";
+import { createApplication, getApplication } from "../controllers/application";
 
 const router = express.Router();
 
-router.get("/application");
-router.get("/application/:applicationId");
+router.get("/application/:applicationRef", getApplication);
 
-router.post("/application");
+router.post("/application", createApplication);
 router.put("/application/:applicationId");
 
-router.post("/application/:applicationId/quote");
+router.post("/application/quote");
 
 export default router;
