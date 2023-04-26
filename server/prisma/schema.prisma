@@ -11,8 +11,8 @@ datasource db {
 }
 
 model Application {
-  id                    Int @id @default(autoincrement())
-  applicationReference  String
+  id                    Int       @id @default(autoincrement())
+  applicationReference  String    @unique
   firstName             String
   lastName              String
   dateOfBirth           DateTime?
@@ -24,11 +24,11 @@ model Application {
 }
 
 model Vehicle {
-  id             Int @id @default(autoincrement())
-  vin            String
-  year           Int
-  make           String
-  model          String
+  id             Int      @id @default(autoincrement())
+  vin            String?
+  year           Int?
+  make           String?
+  model          String?
 
   Application    Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId  Int

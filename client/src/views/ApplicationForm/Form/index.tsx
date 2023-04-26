@@ -7,8 +7,8 @@ import { INITIAL_VALUES } from "constants";
 import ContactInfo from "./ContactInfo";
 import VehicleInfo from "./VehicleInfo";
 import { Button } from "@mui/material";
-import { useGetApplication } from "services/application";
-import { useSearchParams } from "react-router-dom";
+import { useGetApplication, useUpdateApplication } from "services/application";
+import InputField from "components/molecules/InputField";
 
 const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
@@ -56,18 +56,18 @@ const validationSchema = Yup.object().shape({
     ),
 });
 
-const Form = () => {
-  const [searchParams] = useSearchParams();
-  const { data } = useGetApplication(searchParams.get("ref") ?? "");
-
-  console.log(data);
+const Form = ({ applicationRef }: { applicationRef: string }) => {
+  const { data } = useGetApplication(applicationRef);
+  const { mutate, isError, isSuccess } = useUpdateApplication();
 
   return (
     <Formik
       enableReinitialize
       initialValues={data ?? INITIAL_VALUES}
       validationSchema={validationSchema}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={(values) =>
+        mutate({ applicationRef, body: JSON.stringify(values) })
+      }
     >
       {({ values, handleChange, handleBlur }) => (
         <FormikForm>
@@ -82,9 +82,19 @@ const Form = () => {
               handleChange={handleChange}
               handleBlur={handleBlur}
             />
-            <Button type="submit" variant="contained">
-              Save
-            </Button>
+            <FlexBox columnGap={1}>
+              <Button type="submit" variant="contained" fullWidth>
+                Update
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="secondary"
+                fullWidth
+              >
+                Get Quote
+              </Button>
+            </FlexBox>
           </FlexBox>
         </FormikForm>
       )}

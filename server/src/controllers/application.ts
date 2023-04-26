@@ -1,38 +1,24 @@
 import { PrismaClient } from "@prisma/client";
 import { v4 as uuid } from "uuid";
 import { Request, Response } from "express";
-import { format, isDate, parse } from "date-fns";
+import { format } from "date-fns";
+import { getFormattedDOB, validateApplicationData } from "../utils/helpers";
 
 const prisma = new PrismaClient();
 
 export const createApplication = async (req: Request, res: Response) => {
-  let isValid = true;
   let dateOfBirthFormatted: Date | null = null;
-  const messages = [];
 
-  // validate that first and last name have been given
-  if (!req.body["firstName"]) {
-    isValid = false;
-    messages.push("First name is required");
+  const { dateOfBirth, ...restRequest } = req.body;
+
+  if (dateOfBirth) {
+    dateOfBirthFormatted = getFormattedDOB(dateOfBirth);
   }
 
-  if (!req.body["lastName"]) {
-    isValid = false;
-    messages.push("Last name is required");
-  }
-
-  if (req.body["dateOfBirth"]) {
-    dateOfBirthFormatted = parse(
-      req.body["dateOfBirth"],
-      "MM-dd-yyyy",
-      new Date()
-    );
-
-    if (!isDate(dateOfBirthFormatted)) {
-      isValid = false;
-      messages.push("Date of birth must be formatted as MM-DD-YYYY");
-    }
-  }
+  const [isValid, messages] = validateApplicationData(
+    { ...restRequest, dateOfBirth: dateOfBirthFormatted },
+    true
+  );
 
   if (!isValid) {
     res.status(422).send(
@@ -42,29 +28,25 @@ export const createApplication = async (req: Request, res: Response) => {
       })
     );
   } else {
-    // if dob given, validate valid date
+    const { vehicles, zipCode, ...restApplication } = req.body;
 
-    // extract vehicles
-    const { vehicles } = req.body;
-
-    // insert into db, create uuid
     const result = await prisma.application.create({
       data: {
-        ...req.body,
+        ...restApplication,
+        zipCode: +zipCode,
         dateOfBirth: dateOfBirthFormatted,
         applicationReference: uuid(),
       },
     });
 
     if (vehicles) {
-      for (const vehicle of vehicles) {
+      for (const { year, ...restVehicle } of vehicles) {
         await prisma.vehicle.create({
-          data: { ...vehicle },
+          data: { ...restVehicle, year: +year, applicationId: result.id },
         });
       }
     }
 
-    // return route to app with uuid in query string
     res.status(201).send(
       JSON.stringify({
         status: "SUCCESS",
@@ -109,4 +91,84 @@ export const getApplication = async (req: Request, res: Response) => {
       );
     }
   }
+};
+
+export const updateApplication = async (req: Request, res: Response) => {
+  const { vehicles, zipCode, ...restApplication } = req.body;
+
+  const application = await prisma.application.findFirst({
+    select: {
+      id: true,
+    },
+    where: {
+      applicationReference: req.params["applicationRef"],
+    },
+  });
+
+  if (!application)
+    res.status(500).send(
+      JSON.stringify({
+        status: "FAIL",
+        message: "Application not found in system",
+      })
+    );
+  else {
+    await prisma.application.update({
+      where: {
+        id: application["id"],
+      },
+      data: {
+        ...restApplication,
+        zipCode: +zipCode,
+      },
+    });
+
+    if (vehicles.length > 0) {
+      await prisma.vehicle.deleteMany({
+        where: {
+          applicationId: application["id"],
+        },
+      });
+
+      for (const { year, ...restVehicle } of vehicles) {
+        await prisma.vehicle.create({
+          data: {
+            ...restVehicle,
+            applicationId: application["id"],
+            year: +year,
+          },
+        });
+      }
+    }
+
+    res.status(201).send(
+      JSON.stringify({
+        status: "SUCCESS",
+      })
+    );
+  }
+};
+
+export const getQuote = (req: Request, res: Response) => {
+  const baseQuote = 30;
+  const { dateOfBirth, ...restApplication } = req.body;
+  const [isValid, messages] = validateApplicationData({
+    dateOfBirth: getFormattedDOB(dateOfBirth),
+    ...restApplication,
+  });
+
+  if (!isValid)
+    res.status(400).send(
+      JSON.stringify({
+        status: "FAIL",
+        messages,
+      })
+    );
+  else
+    res.status(201).send(
+      JSON.stringify({
+        status: "SUCCESS",
+        data: baseQuote * req.body["vehicles"].length,
+      })
+    );
 };
