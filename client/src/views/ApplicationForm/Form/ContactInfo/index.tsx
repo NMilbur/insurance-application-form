@@ -9,15 +9,7 @@ import { STATES, StateKey } from "constants";
 import { FORM_DATA } from "constants/types";
 
 interface ContactInfoProps {
-  values: {
-    firstName: FORM_DATA["firstName"];
-    lastName: FORM_DATA["lastName"];
-    dateOfBirth: FORM_DATA["dateOfBirth"];
-    street: FORM_DATA["street"];
-    city: FORM_DATA["city"];
-    state: FORM_DATA["state"];
-    zipCode: FORM_DATA["zipCode"];
-  };
+  values: FORM_DATA;
   handleBlur: FormikHandlers["handleBlur"];
   handleChange: FormikHandlers["handleChange"];
 }
