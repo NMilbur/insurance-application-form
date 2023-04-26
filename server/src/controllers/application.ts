@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { v4 as uuid } from "uuid";
 import { Request, Response } from "express";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { getFormattedDOB, validateApplicationData } from "../utils/helpers";
 
 const prisma = new PrismaClient();
@@ -152,8 +152,9 @@ export const updateApplication = async (req: Request, res: Response) => {
 export const getQuote = (req: Request, res: Response) => {
   const baseQuote = 30;
   const { dateOfBirth, ...restApplication } = req.body;
+
   const [isValid, messages] = validateApplicationData({
-    dateOfBirth: getFormattedDOB(dateOfBirth),
+    dateOfBirth: parseISO(dateOfBirth),
     ...restApplication,
   });
 

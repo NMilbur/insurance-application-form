@@ -1,14 +1,24 @@
 import { isBefore, sub } from "date-fns";
-import { Form as FormikForm, Formik } from "formik";
+import {
+  Form as FormikForm,
+  Formik,
+  FormikHelpers,
+  FormikErrors,
+  ErrorMessageProps,
+} from "formik";
 import * as Yup from "yup";
 import FlexBox from "components/atoms/FlexBox";
 
 import { INITIAL_VALUES } from "constants";
 import ContactInfo from "./ContactInfo";
 import VehicleInfo from "./VehicleInfo";
-import { Button } from "@mui/material";
-import { useGetApplication, useUpdateApplication } from "services/application";
-import InputField from "components/molecules/InputField";
+import { Alert, Button, Typography } from "@mui/material";
+import {
+  useGetApplication,
+  useGetQuote,
+  useUpdateApplication,
+} from "services/application";
+import { FORM_DATA } from "constants/types";
 
 const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
@@ -57,19 +67,41 @@ const validationSchema = Yup.object().shape({
 });
 
 const Form = ({ applicationRef }: { applicationRef: string }) => {
-  const { data } = useGetApplication(applicationRef);
-  const { mutate, isError, isSuccess } = useUpdateApplication();
+  const { data: appData } = useGetApplication(applicationRef);
+  const { mutate: update, isError } = useUpdateApplication();
+  const {
+    mutate: getQuote,
+    data: quoteData,
+    isSuccess: quoteSuccess,
+  } = useGetQuote();
+
+  const handleGetQuoteClick = (
+    values: FORM_DATA,
+    setErrors: FormikHelpers<FORM_DATA>["setErrors"]
+  ) => {
+    validationSchema
+      .validate(values, { abortEarly: false })
+      .then(() => getQuote(JSON.stringify(values)))
+      .catch((errors) =>
+        setErrors(
+          errors.inner.reduce((acc: any, err: any) => {
+            acc[err.path] = err.message;
+            return acc;
+          }, {})
+        )
+      );
+  };
 
   return (
     <Formik
       enableReinitialize
-      initialValues={data ?? INITIAL_VALUES}
+      initialValues={appData ?? INITIAL_VALUES}
       validationSchema={validationSchema}
       onSubmit={(values) =>
-        mutate({ applicationRef, body: JSON.stringify(values) })
+        update({ applicationRef, body: JSON.stringify(values) })
       }
     >
-      {({ values, handleChange, handleBlur }) => (
+      {({ values, handleChange, handleBlur, setErrors }) => (
         <FormikForm>
           <FlexBox flexDirection="column" rowGap={4}>
             <ContactInfo
@@ -82,6 +114,23 @@ const Form = ({ applicationRef }: { applicationRef: string }) => {
               handleChange={handleChange}
               handleBlur={handleBlur}
             />
+
+            {isError && (
+              <FlexBox flexDirection="column">
+                <Alert severity="error">
+                  There was an issue updating your application
+                </Alert>
+              </FlexBox>
+            )}
+
+            {quoteSuccess && quoteData && (
+              <Alert severity="success">
+                <Typography variant="h4">
+                  Your quote is ${quoteData["data"]}
+                </Typography>
+              </Alert>
+            )}
+
             <FlexBox columnGap={1}>
               <Button type="submit" variant="contained" fullWidth>
                 Update
@@ -90,6 +139,7 @@ const Form = ({ applicationRef }: { applicationRef: string }) => {
                 type="submit"
                 variant="contained"
                 color="secondary"
+                onClick={() => handleGetQuoteClick(values, setErrors)}
                 fullWidth
               >
                 Get Quote

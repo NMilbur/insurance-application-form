@@ -14,18 +14,19 @@ const ApplicationForm = () => {
       <Card>
         <CardContent>
           <FlexBox flexDirection="column" rowGap={5}>
-            <SectionHeader
-              title="Welcome!"
-              titleVariant="h3"
-              subtitle="To complete your quote, please enter and verify your information into the form below."
-              subtitleVariant="h5"
-              hideDivider
-            />
-
             {applicationRef ? (
-              <Form applicationRef={applicationRef} />
+              <>
+                <SectionHeader
+                  title="Welcome!"
+                  titleVariant="h3"
+                  subtitle="To complete your quote, please enter and verify your information into the form below."
+                  subtitleVariant="h5"
+                  hideDivider
+                />
+                <Form applicationRef={applicationRef} />
+              </>
             ) : (
-              <Typography variant="h3">
+              <Typography variant="h5">
                 There was an issue retrieving your information, please use the
                 link you were provided to proceed
               </Typography>

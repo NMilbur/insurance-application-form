@@ -18,8 +18,8 @@ export type ApplicationData = {
   vehicles: Vehicle[];
 };
 
-export const getFormattedDOB = (input: string) =>
-  parse(input, "MM-dd-yyyy", new Date());
+export const getFormattedDOB = (input: string, format = "MM-dd-yyyy") =>
+  parse(input, format, new Date());
 
 export const validateApplicationData = (
   applicationData: ApplicationData,
@@ -39,7 +39,6 @@ export const validateApplicationData = (
     vehicles,
   } = applicationData;
 
-  //
   if (!firstName) {
     returnData[0] = false;
     returnData[1].push("First name is required");
