@@ -7,7 +7,6 @@ import SectionHeader from "components/molecules/SectionHeader";
 import { ErrorMessage, Field, FieldProps, FormikHandlers } from "formik";
 import { STATES, StateKey } from "constants";
 import { FORM_DATA } from "constants/types";
-import { parseISO } from "date-fns";
 
 interface ContactInfoProps {
   values: {
