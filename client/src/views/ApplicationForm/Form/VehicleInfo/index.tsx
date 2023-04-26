@@ -1,7 +1,8 @@
 import { FieldArray, FormikHandlers } from "formik";
 import { Typography } from "@mui/material";
 import FlexBox from "components/atoms/FlexBox";
-import { FORM_DATA, INITIAL_VALUES } from "views/ApplicationForm/constants";
+import { INITIAL_VALUES } from "constants";
+import { FORM_DATA } from "constants/types";
 import SectionHeader from "components/molecules/SectionHeader";
 import InputField from "components/molecules/InputField";
 import { AddButton, DeleteButton } from "components/atoms/Buttons";
