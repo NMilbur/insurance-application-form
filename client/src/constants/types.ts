@@ -5,7 +5,7 @@ export type Vehicle = {
   model: string;
 };
 
-export type FORM_DATA = {
+export type Contact = {
   firstName: string;
   lastName: string;
   dateOfBirth: Date;
@@ -13,5 +13,8 @@ export type FORM_DATA = {
   city: string;
   state: string;
   zipCode: number;
+};
+
+export type FORM_DATA = Contact & {
   vehicles: Vehicle[];
 };
